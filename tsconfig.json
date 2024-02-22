@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "js",
+        "target": "esnext",
+        "moduleResolution": "nodenext",
+        "module": "nodenext",
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    }
+}

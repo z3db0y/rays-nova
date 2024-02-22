@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+    <script src="./launcher.js" defer></script>
+    <link rel="stylesheet" href="../style/launcher.css" />
+</head>
+<body>
+    <canvas class="bg" id="canvas"></canvas>
+    <div class="taskbar">
+        <span class="material-symbols-outlined" id="close">close</span>
+        <span class="material-symbols-outlined" id="minimize">remove</span>
+        <span
+            class="material-symbols-outlined"
+            id="settings"
+            style="margin-right: 20px"
+            >tune</span
+        >
+        <span class="left">[Rays] Nova</span>
+    </div>
+    <div class="container">
+        <div class="sectionHolder tall">
+            <div class="section wide">
+                <h1>News</h1>
+                <span
+                    ><br />From the ashes, [Rays] client rises again. Despite
+                    the censorship, the hate, the prejudice - we shall dominate.
+                    <br /><br />I like to think of myself as the Kanye West of
+                    Krunker, but I will never be him; so enjoy this little gift
+                    I'm giving you.<br /><br />And they can't accuse shit this
+                    time, for this project is open-source. So fuck Yendis, fuck
+                    FRVR, I hope they all burn in hell.</span
+                >
+            </div>
+            <div class="section slim">
+                <div
+                    class="socialBtn"
+                    onclick="info?.discord ? window.open('https:\/\/discord.gg/' + info?.discord) : 0"
+                >
+                    <i class="fa-discord" style="color: #7289da"></i>
+                    <span>Join our Discord!</span>
+                </div>
+            </div>
+        </div>
+        <div class="sectionHolder short">
+            <div class="section wide">
+                <span id="quote"></span>
+            </div>
+            <div class="section slim launchBtn" id="launch">Launch</div>
+        </div>
+    </div>
+</body>
