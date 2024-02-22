@@ -20,6 +20,9 @@ export default class Social {
 
     patchScoreboards() {
         ipcRenderer.send('sync-social');
+
+        let start = Date.now();
+
         console.log(
             'Patching scoreboards...',
             this.users,
@@ -66,15 +69,13 @@ export default class Social {
     }
 
     injectBadges(elem: Element, badges: string[]) {
-        for (let i = 0; i < badges.length; i++) {
-            let img = document.createElement('img');
-            img.src = this.badges.find((b) => b.name === badges[i])?.url;
-
-            if (!img.src) return;
-
-            img.style.height = '15px';
-            elem.insertAdjacentElement('afterbegin', img);
-        }
+        for (let i = 0; i < badges.length; i++)
+            elem.insertAdjacentHTML(
+                'afterbegin',
+                `<img src="${
+                    this.badges.find((b) => b.name === badges[i])?.image || ''
+                }" />`
+            );
     }
 
     injectClan(elem: ChildNode, clan: any) {}
