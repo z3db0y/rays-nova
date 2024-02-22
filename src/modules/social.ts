@@ -8,7 +8,6 @@ export default class Social {
     users: any[] = [];
     clans: any[] = [];
     badges: any[] = [];
-    isRenderer = false;
     centerLeaderDisplay: HTMLDivElement | null = null;
 
     sync(discordId: string, username: string | null, lobbyId: string) {
@@ -20,6 +19,14 @@ export default class Social {
     }
 
     patchScoreboards() {
+        ipcRenderer.send('sync-social');
+        console.log(
+            'Patching scoreboards...',
+            this.users,
+            this.badges,
+            this.clans
+        );
+
         let leaderNames = [
             ...Array.from(document.getElementsByClassName('newLeaderName')),
             ...Array.from(document.getElementsByClassName('newLeaderNameF')),
@@ -58,13 +65,21 @@ export default class Social {
         }
     }
 
-    injectBadges(elem: Element, badges: string[]) {}
+    injectBadges(elem: Element, badges: string[]) {
+        for (let i = 0; i < badges.length; i++) {
+            let img = document.createElement('img');
+            img.src = this.badges.find((b) => b.name === badges[i])?.url;
+
+            if (!img.src) return;
+
+            img.style.height = '15px';
+            elem.insertAdjacentElement('afterbegin', img);
+        }
+    }
 
     injectClan(elem: ChildNode, clan: any) {}
 
     renderer() {
-        this.isRenderer = true;
-
         this.centerLeaderDisplay = document.getElementById(
             'centerLeaderDisplay'
         ) as HTMLDivElement;
@@ -78,18 +93,19 @@ export default class Social {
             this.users = users;
             this.badges = badges;
             this.clans = clans;
-
-            setTimeout(() => ipcRenderer.send('sync-social'), 1000);
         });
-
-        ipcRenderer.send('sync-social');
     }
 
     main() {
         this.connect();
 
-        ipcMain.on('sync-social', () => {
-            ipcMain.emit('social-sync', this.users, this.badges, this.clans);
+        ipcMain.on('sync-social', (event) => {
+            event.sender.send(
+                'social-sync',
+                this.users,
+                this.badges,
+                this.clans
+            );
         });
     }
 
@@ -125,8 +141,6 @@ export default class Social {
     }
 
     onMessage(data: [string, ...any]) {
-        const { window } = require('../main');
-
         let [event, ...args] = data;
         console.log('Social event:', event, args);
 
