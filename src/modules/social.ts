@@ -89,6 +89,7 @@ export default class Social {
                 elem.style.color = clan.cosmetic;
                 break;
             case 'gradient':
+                elem.style.setProperty('-webkit-background-clip', 'text');
                 elem.style.backgroundClip = 'text';
                 elem.style.color = 'transparent';
                 elem.style.backgroundImage = clan.cosmetic;
