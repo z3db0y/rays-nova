@@ -6,6 +6,8 @@ import ModuleManger from './module/manager';
 import { join } from 'path';
 
 export let window: BrowserWindow;
+const userAgent =
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
 function quit() {
     let size = window.getSize();
@@ -25,6 +27,7 @@ function quit() {
 
 async function handleKeyEvent(
     context: Context,
+    window: BrowserWindow,
     event: Electron.Event,
     input: Electron.Input
 ) {
@@ -46,6 +49,7 @@ async function handleKeyEvent(
         case Context.Game:
             if (input.key == binds.newGame)
                 window.loadURL('https://krunker.io');
+        default:
             if (input.key == binds.refresh) window.reload();
 
             if (input.key == binds.fullscreen)
@@ -96,6 +100,13 @@ export default function createMainWindow(key: string) {
     window.setMenu(null);
     window.on('close', quit);
 
+    window.webContents.on(
+        'did-fail-load',
+        (event, errorCode, errorDesc, validatedURL, isMainFrame) => {
+            if (isMainFrame) window.loadFile('assets/html/disconnected.html');
+        }
+    );
+
     window.once('ready-to-show', () => {
         window.show();
         moduleManager.load(RunAt.LoadEnd);
@@ -113,7 +124,7 @@ export default function createMainWindow(key: string) {
     );
     window.webContents.on(
         'before-input-event',
-        handleKeyEvent.bind(null, Context.Game)
+        handleKeyEvent.bind(null, Context.Game, window)
     );
     window.loadURL('https://krunker.io');
 }
@@ -125,9 +136,39 @@ function handleNavigation(event: Electron.Event, url: URL) {
     switch (context) {
         case Context.Game:
             window.loadURL(url.toString());
+            window.focus();
             break;
         case null:
             shell.openExternal(url.toString());
+            break;
+        default:
+            let win = new BrowserWindow({
+                width: 800,
+                height: 600,
+                title: app.getName(),
+                icon: 'assets/img/icon.png',
+                webPreferences: {
+                    preload: join(__dirname, 'preload'),
+                    contextIsolation: true,
+                },
+            });
+
+            win.setMenu(null);
+            win.webContents.on('will-navigate', (event, url) =>
+                handleNavigation(event, new URL(url))
+            );
+            win.webContents.on('new-window', (event, url) =>
+                handleNavigation(event, new URL(url))
+            );
+            win.webContents.on(
+                'before-input-event',
+                handleKeyEvent.bind(null, context, win)
+            );
+            win.webContents.on('will-prevent-unload', (event) =>
+                event.preventDefault()
+            );
+
+            win.loadURL(url.toString(), { userAgent });
             break;
     }
 }

@@ -97,7 +97,7 @@ async function getKanyeQuote() {
             } catch {
                 reject();
             }
-        });
+        }).on('error', reject);
     });
 }
 
@@ -124,6 +124,7 @@ function splash() {
         win.once('ready-to-show', win.show.bind(win));
         win.webContents.on('did-finish-load', resolve.bind(null, win));
 
+        win.setMenu(null);
         win.loadFile('assets/html/splash.html');
     });
 }
@@ -179,15 +180,32 @@ function launcher() {
     });
 }
 
+function openLauncherSettings() {
+    let win = new BrowserWindow({
+        frame: false,
+        show: false,
+        icon: 'assets/img/icon.png',
+        maximizable: false,
+        width: 500,
+    });
+
+    return new Promise<BrowserWindow>((resolve) => {
+        win.once('ready-to-show', win.show.bind(win));
+        win.webContents.on('did-finish-load', resolve.bind(null, win));
+
+        win.loadFile('assets/html/launcherSettings.html');
+    });
+}
+
 enum LaunchMode {
     Splash,
     Launcher,
 }
 
 async function launch(launchMode?: number) {
-    let quote = await getKanyeQuote();
+    let quote = await getKanyeQuote().catch(() => '');
     launchMode ||= config.get('launchMode', 0);
-    // launchMode = 1;
+    launchMode = 1;
     let shouldUpdate = config.get('update', true);
 
     switch (launchMode) {
@@ -217,16 +235,11 @@ async function launch(launchMode?: number) {
             break;
         case LaunchMode.Launcher:
             let launcherWindow = await launcher();
-
-            launcherWindow.webContents.send('info', {
-                quote,
-                version: app.getVersion(),
-                update: shouldUpdate,
-                discord,
-            });
+            let launcherSettings: BrowserWindow | null = null;
 
             let onLaunchEvent: (event: Electron.IpcMainEvent) => void;
             let onSettingsEvent: (event: Electron.IpcMainEvent) => void;
+            let onInfoEvent: (event: Electron.IpcMainEvent) => void;
 
             ipcMain.on(
                 'launch',
@@ -245,13 +258,27 @@ async function launch(launchMode?: number) {
 
             ipcMain.on(
                 'settings',
-                (onSettingsEvent = (event) => {
+                (onSettingsEvent = async (event) => {
                     if (event.sender !== launcherWindow.webContents) return;
-                    dialog.showMessageBox(null, {
-                        message:
-                            'Settings are still in development, please check back later.',
-                        title: 'Warning',
-                        type: 'warning',
+                    if (!launcherSettings) {
+                        launcherSettings = await openLauncherSettings();
+
+                        launcherSettings.on(
+                            'closed',
+                            () => (launcherSettings = null)
+                        );
+                    } else launcherSettings.focus();
+                })
+            );
+
+            ipcMain.on(
+                'info',
+                (onInfoEvent = (event) => {
+                    if (event.sender !== launcherWindow.webContents) return;
+
+                    event.sender.send('info', {
+                        quote,
+                        discord,
                     });
                 })
             );
@@ -259,7 +286,10 @@ async function launch(launchMode?: number) {
             launcherWindow.on('closed', () => {
                 ipcMain.removeListener('launch', onLaunchEvent);
                 ipcMain.removeListener('settings', onSettingsEvent);
+                ipcMain.removeListener('info', onInfoEvent);
             });
+
+            ipcMain.emit('info', { sender: launcherWindow.webContents });
             break;
     }
 }

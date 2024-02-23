@@ -21,15 +21,6 @@ export default class Social {
     patchScoreboards() {
         ipcRenderer.send('sync-social');
 
-        let start = Date.now();
-
-        console.log(
-            'Patching scoreboards...',
-            this.users,
-            this.badges,
-            this.clans
-        );
-
         let leaderNames = [
             ...Array.from(document.getElementsByClassName('newLeaderName')),
             ...Array.from(document.getElementsByClassName('newLeaderNameF')),
@@ -49,9 +40,6 @@ export default class Social {
 
             clan = clan.slice(2, -1);
 
-            // TODO: Add badges/clan colors to the leaderboards
-            console.log('player:', name, 'clan:', clan);
-
             for (let i = 0; i < this.users.length; i++) {
                 let user = this.users[i];
                 if (user.username !== name) continue;
@@ -60,10 +48,10 @@ export default class Social {
             }
 
             for (let i = 0; i < this.clans.length; i++) {
-                let clan = this.clans[i];
-                if (clan.name !== clan) continue;
+                let clanObj = this.clans[i];
+                if (clanObj.name.toLowerCase() !== clan.toLowerCase()) continue;
 
-                this.injectClan(clanElem, clan);
+                this.injectClan(clanElem as HTMLElement, clanObj);
             }
         }
     }
@@ -72,13 +60,51 @@ export default class Social {
         for (let i = 0; i < badges.length; i++)
             elem.insertAdjacentHTML(
                 'afterbegin',
-                `<img src="${
+                `<img class="raysBadge" src="${(
                     this.badges.find((b) => b.name === badges[i])?.image || ''
-                }" />`
+                ).replace(/"/g, '\\"')}" />`
             );
     }
 
-    injectClan(elem: ChildNode, clan: any) {}
+    injectClan(elem: HTMLElement, clan: any) {
+        switch (clan.cosmeticType) {
+            case 'rgb':
+                elem.animate(
+                    [
+                        { color: 'crimson' },
+                        { color: 'orange' },
+                        { color: 'yellow' },
+                        { color: 'lime' },
+                        { color: 'mediumblue' },
+                        { color: 'crimson' },
+                    ],
+                    {
+                        duration: 5000,
+                        iterations: Infinity,
+                        iterationStart: (Date.now() % 5000) / 5000,
+                    }
+                );
+                break;
+            case 'color':
+                elem.style.color = clan.cosmetic;
+                break;
+            case 'gradient':
+                elem.style.backgroundClip = 'text';
+                elem.style.color = 'transparent';
+                elem.style.backgroundImage = clan.cosmetic;
+                break;
+            case 'image':
+                elem.style.display = 'none';
+                elem.insertAdjacentHTML(
+                    'afterend',
+                    `<img class="raysClan" src=${(clan.cosmetic || '').replace(
+                        /"/g,
+                        '\\"'
+                    )}" />`
+                );
+                break;
+        }
+    }
 
     renderer() {
         this.centerLeaderDisplay = document.getElementById(
@@ -143,7 +169,7 @@ export default class Social {
 
     onMessage(data: [string, ...any]) {
         let [event, ...args] = data;
-        console.log('Social event:', event, args);
+        console.log('Social event:', event, ...args);
 
         switch (event) {
             case 'users':

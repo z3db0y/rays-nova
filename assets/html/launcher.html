@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+    <script src="./particles.js"></script>
     <script src="./launcher.js" defer></script>
     <link rel="stylesheet" href="../style/launcher.css" />
 </head>
@@ -31,10 +32,7 @@
                 >
             </div>
             <div class="section slim">
-                <div
-                    class="socialBtn"
-                    onclick="info?.discord ? window.open('https:\/\/discord.gg/' + info?.discord) : 0"
-                >
+                <div class="socialBtn" id="discordBtn">
                     <i class="fa-discord" style="color: #7289da"></i>
                     <span>Join our Discord!</span>
                 </div>

@@ -42,7 +42,7 @@ export default class AdBlock extends Module {
                 if(ip !== '0.0.0.0') continue;
                 this.hosts.push(host);
             }
-        }).end();
+        }).end().on('error', () => {});
 
         Manager.registerBeforeRequestCallback((details, callback) => {
             if(!this.config.get('enabled', false)) return callback({ cancel: false });
