@@ -69,6 +69,8 @@ export default class Social {
     injectClan(elem: HTMLElement, clan: any) {
         switch (clan.cosmeticType) {
             case 'rgb':
+                let duration = parseInt(clan.cosmetic) || 1000;
+
                 elem.animate(
                     [
                         { color: 'crimson' },
@@ -79,9 +81,9 @@ export default class Social {
                         { color: 'crimson' },
                     ],
                     {
-                        duration: 5000,
+                        duration,
                         iterations: Infinity,
-                        iterationStart: (Date.now() % 5000) / 5000,
+                        iterationStart: (Date.now() % duration) / duration,
                     }
                 );
                 break;

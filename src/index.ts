@@ -204,8 +204,8 @@ enum LaunchMode {
 
 async function launch(launchMode?: number) {
     let quote = await getKanyeQuote().catch(() => '');
-    launchMode ||= config.get('launchMode', 0);
-    launchMode = 1;
+    launchMode ||= config.get('modules.launcher.mode', 0);
+    // launchMode = 1;
     let shouldUpdate = config.get('update', true);
 
     switch (launchMode) {
