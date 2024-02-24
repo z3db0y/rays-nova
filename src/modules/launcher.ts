@@ -8,19 +8,20 @@ export default class Launcher extends Module {
     options = [
         new Dropdown(this, {
             name: 'Launch mode',
-            description: 'Whether to show a launcher or splash screen on client start.',
+            description:
+                'Whether to show a launcher or splash screen on client start.',
             id: 'mode',
             options: [
                 {
                     name: 'Splash screen',
-                    value: 0
+                    value: 0,
                 },
                 {
                     name: 'Launcher',
-                    value: 1
-                }
-            ]
-        })
+                    value: 1,
+                },
+            ],
+        }),
     ];
 
     contexts = [

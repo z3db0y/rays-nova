@@ -55,7 +55,7 @@ export default async function verify(input: TemplateStringsArray) {
     });
 
     app.name = '[Rays] Nova';
-    launch();
+    launch(launchKey);
 }
 
 function updater(setTitle: (title: string) => void) {
@@ -202,7 +202,9 @@ enum LaunchMode {
     Launcher,
 }
 
-async function launch(launchMode?: number) {
+export async function launch(key: string, launchMode?: number) {
+    if (key !== launchKey) return process.exit(1337);
+
     let quote = await getKanyeQuote().catch(() => '');
     launchMode ||= config.get('modules.launcher.mode', 0);
     // launchMode = 1;

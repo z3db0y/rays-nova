@@ -1,5 +1,5 @@
 import { screen, app, BrowserWindow, shell } from 'electron';
-import { launchKey } from './index';
+import { launch, launchKey } from './index';
 import config from './config';
 import { Context, RunAt, fromURL } from './context';
 import ModuleManger from './module/manager';
@@ -9,7 +9,7 @@ export let window: BrowserWindow;
 const userAgent =
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-function quit() {
+function quit(event) {
     let size = window.getSize();
     let pos = window.getPosition();
     let fullscreen = window.isFullScreen();
@@ -21,6 +21,15 @@ function quit() {
         y: pos[1],
         fullscreen,
     });
+
+    let launchMode = config.get('modules.launcher.mode', 0);
+    if (launchMode == 1) {
+        app.removeAllListeners('window-all-closed');
+        app.on('window-all-closed', event => event.preventDefault());
+
+        launch(launchKey, launchMode);
+        return;
+    }
 
     app.quit();
 }
