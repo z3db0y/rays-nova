@@ -1,6 +1,7 @@
 # [Rays] Nova
 
 ![Version badge](https://api.z3db0y.com/nova/versionBadge)
+![Splash screen](https://github.com/z3db0y/rays-nova/blob/main/assets/img/splash.gif?raw=true)
 
 From the ashes, [Rays] client rises again. Despite the censorship, the hate, the prejudice - we shall dominate.  
 I like to think of myself as the Kanye West of Krunker, but I will never be him; so enjoy this little gift I'm giving you.  
