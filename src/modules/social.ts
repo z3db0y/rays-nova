@@ -9,6 +9,8 @@ export default class Social {
     clans: any[] = [];
     badges: any[] = [];
     centerLeaderDisplay: HTMLDivElement | null = null;
+    instructionHolder: HTMLDivElement | null = null;
+    endMidHolder: HTMLDivElement | null = null;
 
     sync(discordId: string, username: string | null, lobbyId: string) {
         this.send('sync', {
@@ -56,10 +58,38 @@ export default class Social {
         }
     }
 
-    injectBadges(elem: Element, badges: string[]) {
+    patchEndTable() {
+        let leaders = Array.from(document.getElementsByClassName('endTableN'));
+
+        for (let i = 0; i < leaders.length; i++) {
+            let leader = leaders[i] as HTMLElement;
+            let name = leader.childNodes[0]?.textContent || '';
+
+            let clanElem = leader.childNodes[1];
+            let clan = clanElem?.textContent || '';
+
+            clan = clan.slice(2, -1);
+
+            for (let i = 0; i < this.users.length; i++) {
+                let user = this.users[i];
+                if (user.username !== name) continue;
+
+                this.injectBadges(leader, user.badges, true);
+            }
+
+            for (let i = 0; i < this.clans.length; i++) {
+                let clanObj = this.clans[i];
+                if (clanObj.name.toLowerCase() !== clan.toLowerCase()) continue;
+
+                this.injectClan(clanElem as HTMLElement, clanObj);
+            }
+        }
+    }
+
+    injectBadges(elem: Element, badges: string[], endTable = false) {
         for (let i = 0; i < badges.length; i++)
             elem.insertAdjacentHTML(
-                'afterbegin',
+                endTable ? 'afterbegin' : 'afterbegin',
                 `<img class="raysBadge" src="${(
                     this.badges.find((b) => b.name === badges[i])?.image || ''
                 ).replace(/"/g, '\\"')}" />`
@@ -114,10 +144,28 @@ export default class Social {
             'centerLeaderDisplay'
         ) as HTMLDivElement;
 
+        this.instructionHolder = document.getElementById(
+            'instructionHolder'
+        ) as HTMLDivElement;
+
+        this.endMidHolder = document.getElementById(
+            'endMidHolder'
+        ) as HTMLDivElement;
+
         new MutationObserver(() => this.patchScoreboards()).observe(
             this.centerLeaderDisplay,
             { childList: true }
         );
+
+        new MutationObserver(() => this.patchScoreboards()).observe(
+            this.instructionHolder,
+            { attributes: true, attributeFilter: ['style'] }
+        );
+
+        // new MutationObserver(() => this.patchEndTable()).observe(
+        //     this.endMidHolder,
+        //     { attributes: true, attributeFilter: ['style'] }
+        // );
 
         ipcRenderer.on('social-sync', (_, users, badges, clans) => {
             this.users = users;
