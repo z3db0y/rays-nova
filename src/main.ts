@@ -6,7 +6,7 @@ import ModuleManger from './module/manager';
 import { join } from 'path';
 
 export let window: BrowserWindow;
-const userAgent =
+const userAgent = // for non-game windows (e.g. editor, viewer, social)
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
 function quit(event) {
@@ -25,7 +25,7 @@ function quit(event) {
     let launchMode = config.get('modules.launcher.mode', 0);
     if (launchMode == 1) {
         app.removeAllListeners('window-all-closed');
-        app.on('window-all-closed', event => event.preventDefault());
+        app.on('window-all-closed', (event) => event.preventDefault());
 
         launch(launchKey, launchMode);
         return;
@@ -99,7 +99,9 @@ export default function createMainWindow(key: string) {
         icon: 'assets/img/icon.png',
 
         webPreferences: {
-            preload: join(__dirname, 'preload'),
+            preload: join(__dirname, 'preload/index.js'),
+            sandbox: false,
+            contextIsolation: false,
         },
     });
 
@@ -125,12 +127,14 @@ export default function createMainWindow(key: string) {
         event.preventDefault();
         window.setTitle(app.getName());
     });
-    window.webContents.on('will-navigate', (event, url) =>
-        handleNavigation(event, new URL(url))
-    );
-    window.webContents.on('new-window', (event, url) =>
-        handleNavigation(event, new URL(url))
-    );
+    window.webContents.on('will-navigate', (event, url) => {
+        event.preventDefault();
+        handleNavigation(new URL(url));
+    });
+    window.webContents.on('new-window', (event, url) => {
+        event.preventDefault();
+        handleNavigation(new URL(url));
+    });
     window.webContents.on(
         'before-input-event',
         handleKeyEvent.bind(null, Context.Game, window)
@@ -138,8 +142,7 @@ export default function createMainWindow(key: string) {
     window.loadURL('https://krunker.io');
 }
 
-function handleNavigation(event: Electron.Event, url: URL) {
-    event.preventDefault();
+export function handleNavigation(url: URL) {
     let context = fromURL(url);
 
     switch (context) {
@@ -157,18 +160,21 @@ function handleNavigation(event: Electron.Event, url: URL) {
                 title: app.getName(),
                 icon: 'assets/img/icon.png',
                 webPreferences: {
-                    preload: join(__dirname, 'preload'),
-                    contextIsolation: true,
+                    preload: join(__dirname, 'preload/index.js'),
+                    sandbox: false,
+                    contextIsolation: false,
                 },
             });
 
             win.setMenu(null);
-            win.webContents.on('will-navigate', (event, url) =>
-                handleNavigation(event, new URL(url))
-            );
-            win.webContents.on('new-window', (event, url) =>
-                handleNavigation(event, new URL(url))
-            );
+            win.webContents.on('will-navigate', (event, url) => {
+                event.preventDefault();
+                handleNavigation(new URL(url));
+            });
+            win.webContents.on('new-window', (event, url) => {
+                event.preventDefault();
+                handleNavigation(new URL(url));
+            });
             win.webContents.on(
                 'before-input-event',
                 handleKeyEvent.bind(null, context, win)
@@ -176,6 +182,10 @@ function handleNavigation(event: Electron.Event, url: URL) {
             win.webContents.on('will-prevent-unload', (event) =>
                 event.preventDefault()
             );
+            win.webContents.on('page-title-updated', (event, title) => {
+                event.preventDefault();
+                win.setTitle(app.getName() + ' - ' + title);
+            });
 
             win.loadURL(url.toString(), { userAgent });
             break;

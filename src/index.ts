@@ -5,11 +5,9 @@ import {
     screen,
     protocol,
     ipcMain,
-    shell,
-    dialog,
 } from 'electron';
 import ModuleManager from './module/manager';
-import createMainWindow from './main';
+import createMainWindow, { handleNavigation } from './main';
 import config from './config';
 import { Context, RunAt } from './context';
 import { join } from 'path';
@@ -117,6 +115,7 @@ function splash() {
         icon: 'assets/img/icon.png',
         webPreferences: {
             nodeIntegration: true,
+            contextIsolation: false,
         },
     });
 
@@ -137,6 +136,7 @@ function launcher() {
         maximizable: false,
         webPreferences: {
             nodeIntegration: true,
+            contextIsolation: false,
         },
     });
 
@@ -163,13 +163,20 @@ function launcher() {
             })
         );
 
-        let onNavigate = (event: Electron.Event, url: string) => {
+        win.webContents.on('will-navigate', (event, url) => {
             event.preventDefault();
-            shell.openExternal(url.toString());
-        };
+            handleNavigation(new URL(url));
+        });
+        win.webContents.on('new-window', (event, url) => {
+            event.preventDefault();
+            handleNavigation(new URL(url));
+        });
+        win.webContents.on('page-title-updated', (event) => {
+            event.preventDefault();
+            win.setTitle(app.getName());
+        });
 
-        win.webContents.on('will-navigate', onNavigate);
-        win.webContents.on('new-window', onNavigate);
+        win.on('close', () => onCloseEvent({ sender: win.webContents } as any));
 
         win.on('closed', () => {
             ipcMain.removeListener('close', onCloseEvent);
@@ -187,6 +194,10 @@ function openLauncherSettings() {
         icon: 'assets/img/icon.png',
         maximizable: false,
         width: 500,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
     });
 
     return new Promise<BrowserWindow>((resolve) => {
@@ -207,7 +218,6 @@ export async function launch(key: string, launchMode?: number) {
 
     let quote = await getKanyeQuote().catch(() => '');
     launchMode ||= config.get('modules.launcher.mode', 0);
-    // launchMode = 1;
     let shouldUpdate = config.get('update', true);
 
     switch (launchMode) {

@@ -24,7 +24,7 @@ ipcRenderer.on('info', (_, info) => {
     document.getElementById('quote').innerText = info.quote || '';
     if (info.discord)
         document.getElementById('discordBtn').onclick = () =>
-            window.open('//discord.gg/' + info.discord);
+            window.open('https://discord.gg/' + info.discord);
 });
 
 document.getElementById('launch').addEventListener('click', () => {

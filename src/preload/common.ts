@@ -16,6 +16,7 @@ export default class CommonPreload extends Preload {
     onLoadStart() {
         this.moduleManager.load(RunAt.LoadStart);
         document.addEventListener('keydown', event => event.key === 'Escape' && document.exitPointerLock());
+        delete window.exports; // Prevents the game from detecting electron
     }
 
     onLoadEnd() {
