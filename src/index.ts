@@ -89,7 +89,7 @@ function updater(setTitle: (title: string) => void) {
 
 async function getKanyeQuote() {
     return new Promise<string>((resolve, reject) => {
-        get('https://api.kanye.rest', (res) => {
+        get('https://kanye.grool.xyz/', (res) => {
             try {
                 let data = '';
                 res.on('data', (chunk) => (data += chunk));
