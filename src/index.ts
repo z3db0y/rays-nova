@@ -257,10 +257,13 @@ export async function launch(key: string, launchMode?: number) {
                 'launch',
                 (onLaunchEvent = (event) => {
                     if (event.sender !== launcherWindow.webContents) return;
+                    launcherWindow.removeAllListeners('close');
                     app.on('window-all-closed', (event) =>
                         event.preventDefault()
                     );
+
                     launcherWindow.close();
+                    
                     app.removeAllListeners('window-all-closed');
                     app.on('window-all-closed', app.quit.bind(app));
 
