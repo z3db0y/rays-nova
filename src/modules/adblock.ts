@@ -14,19 +14,21 @@ export default class AdBlock extends Module {
         new Checkbox(this, {
             name: 'Enabled',
             id: 'enabled',
-            description: 'Blocks video and banner advertisements.'
-        })
+            description: 'Blocks video and banner advertisements.',
+        }),
     ];
 
-    contexts = [{
-        context: Context.Startup,
-        runAt: RunAt.LoadStart
-    }]
+    contexts = [
+        {
+            context: Context.Startup,
+            runAt: RunAt.LoadStart,
+        },
+    ];
 
     main() {
-        request(this.hostsURL, async res => {
+        request(this.hostsURL, async (res) => {
             let data = Buffer.alloc(0);
-            res.on('data', chunk => data = Buffer.concat([data, chunk]));
+            res.on('data', (chunk) => (data = Buffer.concat([data, chunk])));
             let fetched = await new Promise((resolve, reject) => {
                 res.on('end', () => resolve(true));
                 res.on('error', reject);
@@ -35,22 +37,32 @@ export default class AdBlock extends Module {
             if (!fetched) return;
             let lines = data.toString().split('\n');
 
-            for(let line of lines) {
+            for (let line of lines) {
                 if (line.startsWith('#')) continue;
                 line = line.trim();
                 let [ip, host] = line.split(' ');
-                if(ip !== '0.0.0.0') continue;
+                if (ip !== '0.0.0.0') continue;
                 this.hosts.push(host);
             }
-        }).end().on('error', () => {});
+        })
+            .end()
+            .on('error', () => {});
 
         Manager.registerBeforeRequestCallback((details, callback) => {
-            if(!this.config.get('enabled', false)) return callback({ cancel: false });
-
             let url = new URL(details.url);
-            if(url.protocol !== 'http:' && url.protocol !== 'https:') return callback({ cancel: false });
-            if(!this.hosts.includes(url.hostname)) return callback({ cancel: false });
-            
+
+            // Block FRVR's shitty fucking analytics, smd
+            if (url.hostname === 'coeus.frvr.com')
+                return callback({ cancel: true });
+
+            if (!this.config.get('enabled', false))
+                return callback({ cancel: false });
+
+            if (url.protocol !== 'http:' && url.protocol !== 'https:')
+                return callback({ cancel: false });
+            if (!this.hosts.includes(url.hostname))
+                return callback({ cancel: false });
+
             return callback({ cancel: true });
         });
     }
