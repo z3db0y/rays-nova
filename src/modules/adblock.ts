@@ -49,6 +49,8 @@ export default class AdBlock extends Module {
             .on('error', () => {});
 
         Manager.registerBeforeRequestCallback((details, callback) => {
+            if (!details.url) return callback({ cancel: false });
+
             let url = new URL(details.url);
 
             // Block FRVR's shitty fucking analytics, smd
