@@ -38,3 +38,14 @@
 .raysClan {
     margin-left: 5px;
 }
+
+#clientWatermark::before {
+    content: attr(data-text);
+    color: #fff;
+}
+
+#clientWatermark::after {
+    margin-left: 0.5em;
+    content: attr(data-version);
+    color: #fff;
+}

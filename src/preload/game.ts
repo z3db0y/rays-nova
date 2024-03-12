@@ -3,6 +3,7 @@ import Preload from './preload';
 import { readFileSync } from 'fs';
 import '../types/window';
 import { join } from 'path';
+import { branch, commit } from '../../buildinfo.json';
 
 export default class GamePreload extends Preload {
     context = Context.Game;
@@ -21,5 +22,20 @@ export default class GamePreload extends Preload {
             'utf8'
         );
         document.head.append(style);
+        injectWatermark();
     }
+}
+
+function injectWatermark() {
+    let watermark = document.createElement('div');
+    watermark.dataset.text = '[Rays] Nova';
+    watermark.dataset.version = `${branch}/${commit}`;
+    watermark.id = 'clientWatermark';
+
+    document
+        .getElementById('matchInfo')
+        .insertAdjacentElement('beforebegin', watermark);
+
+    document.getElementById('timerHolder').style.cssText +=
+        ';width:fit-content!important';
 }
