@@ -13,7 +13,7 @@ And they can't accuse shit this time, for this project is open-source. So fuck Y
 As [Rays] Nova is currently in its alpha testing stage, you can only run the client from its source.
 
 -   Clone this repo.
--   Run `npm i`.
+-   Run `yarn install` (preferred) or `npm i`.
 -   To start, run `npm start`.
 
 ## Bugs

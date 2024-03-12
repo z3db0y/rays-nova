@@ -5,7 +5,7 @@ import Manager from '../module/manager';
 import { protocol } from 'electron';
 
 export default class MatchmakerFix extends Module {
-    enabled = true;
+    enabled = false;
     id = 'mmfix';
     name = 'Matchmaker Fix';
     options = [];
