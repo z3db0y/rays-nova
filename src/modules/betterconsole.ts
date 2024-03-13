@@ -79,6 +79,7 @@ export default class BetterConsole extends Module {
                         ipcRenderer.send('log', prop, ...args);
                     } catch {}
 
+                    Reflect.get(target, prop)(...args);
                     return Reflect.get(target, prop);
                 };
             },
