@@ -49,3 +49,28 @@
     content: attr(data-version);
     color: #fff;
 }
+
+#chatCategories .cat {
+    outline: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 15px;
+    transition: .5s;
+}
+
+#chatCategories .cat.off {
+    background-color: transparent !important;
+}
+
+#chatCategories {
+    width: fit-content;
+    display: flex;
+    pointer-events: all;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+#chatList {
+    margin-bottom: 10px;
+}
