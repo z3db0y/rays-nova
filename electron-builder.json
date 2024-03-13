@@ -17,6 +17,7 @@
     },
     "linux": {
         "artifactName": "${productName}-linux-${version}-${arch}.${ext}",
+        "category": "Game",
         "target": [
             {
                 "target": "AppImage",
@@ -32,10 +33,6 @@
                 "arch": ["x64"]
             }
         ]
-    },
-    "target": {
-        "arch": ["x64", "ia32"],
-        "target": "portable"
     },
     "portable": {
         "artifactName": "${productName}-win-portable-${version}-${arch}.${ext}"
