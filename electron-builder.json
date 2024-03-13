@@ -42,5 +42,11 @@
     },
     "nsis": {
         "artifactName": "${productName}-win-setup-${version}-${arch}.${ext}"
+    },
+    "publish": {
+        "provider": "github",
+        "repo": "rays-nova",
+        "owner": "z3db0y",
+        "releaseType": "draft"
     }
 }
