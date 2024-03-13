@@ -6,7 +6,8 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
+    # runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -26,5 +27,7 @@ jobs:
         run: npm install
       - name: Generate build info
         run: node buildinfo.js
+      - name: Transpile
+        run: npm run transpile
       - name: Build
         run: npx electron-builder --publish always
