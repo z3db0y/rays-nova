@@ -1,0 +1,45 @@
+{
+    "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+    "appId": "com.z3db0y.nova",
+    "icon": "assets/img/icon.png",
+    "productName": "[Rays] Nova",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "win": {
+        "target": [
+            {
+                "target": "nsis",
+                "arch": ["x64", "ia32"]
+            },
+            {
+                "target": "portable",
+                "arch": ["x64", "ia32"]
+            }
+        ]
+    },
+    "linux": {
+        "target": [
+            {
+                "target": "AppImage",
+                "arch": ["x64", "ia32"]
+            }
+        ]
+    },
+    "mac": {
+        "target": [
+            {
+                "target": "dmg",
+                "arch": ["x64", "ia32"]
+            }
+        ]
+    },
+    "target": {
+        "arch": ["x64", "ia32"],
+        "target": "portable"
+    },
+    "portable": {
+        "artifactName": "${productName}-portable-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+        "artifactName": "${productName}-setup-${version}-${arch}.${ext}"
+    }
+}
