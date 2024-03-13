@@ -4,6 +4,7 @@
     "icon": "assets/img/icon.png",
     "productName": "[Rays] Nova",
     "win": {
+        "artifactName": "${name}-${os}-portable-${version}-${arch}.${ext}",
         "target": [
             {
                 "target": "nsis",
@@ -16,7 +17,7 @@
         ]
     },
     "linux": {
-        "artifactName": "${productName}-linux-${version}-${arch}.${ext}",
+        "artifactName": "${productName}-${os}-portable-${version}-${arch}.${ext}",
         "category": "Game",
         "target": [
             {
@@ -26,7 +27,7 @@
         ]
     },
     "mac": {
-        "artifactName": "${productName}-osx-${version}-${arch}.${ext}",
+        "artifactName": "${productName}-${os}-portable-${version}-${arch}.${ext}",
         "target": [
             {
                 "target": "dmg",
@@ -34,11 +35,11 @@
             }
         ]
     },
-    "portable": {
-        "artifactName": "${productName}-win-portable-${version}-${arch}.${ext}"
-    },
     "nsis": {
-        "artifactName": "${productName}-win-setup-${version}-${arch}.${ext}"
+        "artifactName": "${productName}-win-setup-${version}-${arch}.${ext}",
+        "oneClick": false,
+        "perMachine": false,
+        "allowToChangeInstallationDirectory": true
     },
     "publish": {
         "provider": "github",
