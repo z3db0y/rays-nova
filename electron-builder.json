@@ -4,7 +4,7 @@
     "icon": "assets/img/icon.png",
     "productName": "[Rays] Nova",
     "win": {
-        "artifactName": "${name}-${os}-portable-${version}-${arch}.${ext}",
+        "artifactName": "${productName}-${os}-portable-${version}-${arch}.${ext}",
         "target": [
             {
                 "target": "nsis",
