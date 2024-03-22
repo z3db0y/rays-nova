@@ -128,7 +128,9 @@ export default class Chat extends Module {
                     onChange: () => {
                         this.toggleCategory(
                             category.key,
-                            document.getElementById(category.key) as HTMLButtonElement,
+                            document.getElementById(
+                                category.key
+                            ) as HTMLButtonElement,
                             true
                         );
                     },
@@ -152,6 +154,9 @@ export default class Chat extends Module {
                             )
                         ),
                 },
+                removeChild: {
+                    value: elem.removeChild.bind(elem),
+                },
                 insertAdjacentElement: {
                     value: (position: InsertPosition, element: HTMLElement) => {
                         element.classList.add('vanillaChatMsg');
@@ -165,10 +170,13 @@ export default class Chat extends Module {
                     },
                 },
                 scrollHeight: {
-                    get: () => mock.scrollHeight,
+                    get: () => elem.scrollHeight,
+                },
+                scrollTop: {
+                    set: (v) => (elem.scrollTop = v),
                 },
                 clientHeight: {
-                    get: () => mock.clientHeight,
+                    get: () => elem.clientHeight,
                 },
                 style: {
                     get: () =>
