@@ -88,13 +88,15 @@ function updater(setTitle: (title: string) => void) {
 async function getKanyeQuote() {
     return new Promise<string>((resolve, reject) => {
         get('https://kanye.grool.xyz/', (res) => {
-            try {
-                let data = '';
-                res.on('data', (chunk) => (data += chunk));
-                res.on('end', () => resolve(JSON.parse(data).quote));
-            } catch {
-                reject();
-            }
+            let data = '';
+            res.on('data', (chunk) => (data += chunk));
+            res.on('end', () => {
+                try {
+                    resolve(JSON.parse(data).quote);
+                } catch {
+                    reject();
+                }
+            });
         }).on('error', reject);
     });
 }
