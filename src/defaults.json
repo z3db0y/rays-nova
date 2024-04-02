@@ -12,5 +12,8 @@
         "refresh": "F5",
         "fullscreen": "F11",
         "devtools": "F12"
+    },
+    "misc": {
+        "watermark": true
     }
 }
