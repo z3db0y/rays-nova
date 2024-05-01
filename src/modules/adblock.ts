@@ -48,24 +48,24 @@ export default class AdBlock extends Module {
             .end()
             .on('error', () => {});
 
-        Manager.registerBeforeRequestCallback((details, callback) => {
-            if (!details.url) return callback({ cancel: false });
+        // Manager.registerBeforeRequestCallback((details, callback) => {
+        //     if (!details.url) return callback({ cancel: false });
 
-            let url = new URL(details.url);
+        //     let url = new URL(details.url);
 
-            // Block FRVR's shitty fucking analytics, smd
-            if (url.hostname === 'coeus.frvr.com')
-                return callback({ cancel: true });
+        //     // Block FRVR's shitty fucking analytics, smd
+        //     if (url.hostname === 'coeus.frvr.com')
+        //         return callback({ cancel: true });
 
-            if (!this.config.get('enabled', false))
-                return callback({ cancel: false });
+        //     if (!this.config.get('enabled', false))
+        //         return callback({ cancel: false });
 
-            if (url.protocol !== 'http:' && url.protocol !== 'https:')
-                return callback({ cancel: false });
-            if (!this.hosts.includes(url.hostname))
-                return callback({ cancel: false });
+        //     if (url.protocol !== 'http:' && url.protocol !== 'https:')
+        //         return callback({ cancel: false });
+        //     if (!this.hosts.includes(url.hostname))
+        //         return callback({ cancel: false });
 
-            return callback({ cancel: true });
-        });
+        //     return callback({ cancel: true });
+        // });
     }
 }

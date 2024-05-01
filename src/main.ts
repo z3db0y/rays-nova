@@ -131,10 +131,9 @@ export default function createMainWindow(key: string) {
         event.preventDefault();
         handleNavigation(new URL(url));
     });
-    window.webContents.on('new-window', (event, url) => {
-        event.preventDefault();
-        handleNavigation(new URL(url));
-    });
+    window.webContents.setWindowOpenHandler(
+        ({ url }) => (handleNavigation(new URL(url)), { action: 'deny' })
+    );
     window.webContents.on(
         'before-input-event',
         handleKeyEvent.bind(null, Context.Game, window)
@@ -171,10 +170,11 @@ export function handleNavigation(url: URL) {
                 event.preventDefault();
                 handleNavigation(new URL(url));
             });
-            win.webContents.on('new-window', (event, url) => {
-                event.preventDefault();
-                handleNavigation(new URL(url));
-            });
+            window.webContents.setWindowOpenHandler(
+                ({ url }) => (
+                    handleNavigation(new URL(url)), { action: 'deny' }
+                )
+            );
             win.webContents.on(
                 'before-input-event',
                 handleKeyEvent.bind(null, context, win)

@@ -1,4 +1,4 @@
-import { app, protocol } from 'electron';
+import { app, net, protocol } from 'electron';
 import { Context, RunAt } from '../context';
 import Module from '../module';
 import Manager from '../module/manager';
@@ -30,9 +30,9 @@ export default class ResourceSwapper extends Module {
     main() {
         this.path = join(app.getPath('documents'), 'KrunkerResourceSwapper');
 
-        protocol.registerFileProtocol('client-swapper', (request, callback) => {
+        protocol.handle('client-swapper', (request) => {
             let url = new URL(request.url);
-            callback({ path: join(this.path, url.pathname) });
+            return net.fetch('file://' + join(this.path, url.pathname));
         });
 
         Manager.registerBeforeRequestCallback((details, callback) => {

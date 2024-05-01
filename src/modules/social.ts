@@ -125,6 +125,23 @@ export default class Social {
                 elem.style.backgroundClip = 'text';
                 elem.style.color = 'transparent';
                 elem.style.backgroundImage = clan.cosmetic;
+                elem.style.backgroundRepeat = '2 1';
+
+                if (clan.animate) {
+                    elem.style.backgroundSize = '200% 200%';
+
+                    elem.animate(
+                        [
+                            { backgroundPosition: '0% 50%' },
+                            { backgroundPosition: '200% 50%' },
+                        ],
+                        {
+                            duration: 5000,
+                            iterations: Infinity,
+                            iterationStart: (Date.now() % 5000) / 5000,
+                        }
+                    );
+                }
                 break;
             case 'image':
                 elem.style.display = 'none';

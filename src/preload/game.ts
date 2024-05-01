@@ -4,13 +4,14 @@ import { readFileSync } from 'fs';
 import '../types/window';
 import { join } from 'path';
 import { branch, commit } from '../../buildinfo.json';
-import config from '../config';
 
 export default class GamePreload extends Preload {
     context = Context.Game;
 
     onLoadStart() {
         window.OffCliV = true;
+
+        if (process.platform == 'win32') loadMouseDriver();
     }
 
     onLoadEnd() {
@@ -40,4 +41,28 @@ function injectWatermark() {
 
     document.getElementById('timerHolder').style.cssText +=
         ';width:fit-content!important';
+}
+
+function loadMouseDriver() {
+    try {
+        const driver = require(join(
+            __dirname,
+            '../../mouseDriver/build/Release/addon.node'
+        ));
+
+        console.log(
+            'Mouse driver loaded.',
+            (window as any).getEventListeners(document.documentElement)
+        );
+
+        setInterval(() => {
+            let data = driver.poll();
+
+            if (document.pointerLockElement) {
+            }
+        }, 1000 / 360); // 360Hz
+    } catch (err) {
+        console.error('Failed to load mouse driver!');
+        console.error(err);
+    }
 }

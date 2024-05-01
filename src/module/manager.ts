@@ -7,7 +7,7 @@ import { waitFor } from '../util';
 
 type OnBeforeRequestFunction = (
     details: Electron.OnBeforeRequestListenerDetails,
-    callback: (response: Electron.Response) => void
+    callback: (response: Electron.CallbackResponse) => void
 ) => any;
 
 export default class Manager {
@@ -222,11 +222,11 @@ export default class Manager {
 
     static async onBeforeRequest(
         details: Electron.OnBeforeRequestListenerDetails,
-        finalCallback: (response: Electron.Response) => void
+        finalCallback: (response: Electron.CallbackResponse) => void
     ) {
         for (let callback of Manager.beforeRequestCallbacks) {
-            let response = await new Promise<Electron.Response>((resolve) =>
-                callback(details, resolve)
+            let response = await new Promise<Electron.CallbackResponse>(
+                (resolve) => callback(details, resolve)
             );
 
             if (response.cancel || response.redirectURL)

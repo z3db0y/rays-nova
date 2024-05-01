@@ -5,6 +5,7 @@ import {
     screen,
     protocol,
     ipcMain,
+    net,
 } from 'electron';
 import ModuleManager from './module/manager';
 import createMainWindow, { handleNavigation } from './main';
@@ -47,9 +48,9 @@ export default async function verify(input: TemplateStringsArray) {
     moduleManager.load(RunAt.LoadEnd);
     moduleManager.initBeforeRequest();
 
-    protocol.registerFileProtocol('client-resource', (request, callback) => {
+    protocol.handle('client-resource', (request) => {
         let path = request.url.replace('client-resource://', '');
-        callback({ path: join(__dirname, path) });
+        return net.fetch('file://' + join(__dirname, path));
     });
 
     app.name = '[Rays] Nova';
@@ -169,10 +170,9 @@ function launcher() {
             event.preventDefault();
             handleNavigation(new URL(url));
         });
-        win.webContents.on('new-window', (event, url) => {
-            event.preventDefault();
-            handleNavigation(new URL(url));
-        });
+        win.webContents.setWindowOpenHandler(
+            ({ url }) => (handleNavigation(new URL(url)), { action: 'deny' })
+        );
         win.webContents.on('page-title-updated', (event) => {
             event.preventDefault();
             win.setTitle(app.getName());
@@ -265,7 +265,7 @@ export async function launch(key: string, launchMode?: number) {
                     );
 
                     launcherWindow.close();
-                    
+
                     app.removeAllListeners('window-all-closed');
                     app.on('window-all-closed', app.quit.bind(app));
 
