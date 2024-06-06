@@ -19,3 +19,7 @@ As [Rays] Nova is currently in its alpha testing stage, you can only run the cli
 ## Bugs
 
 If you find a bug, please create an issue with a <u>detailed</u> description of your error, as well as your system specs (OS, CPU, GPU), how it happened and the steps to reproduce it.
+
+# NOTE
+
+Building from source is currently not recommended, as a big change is currently being worked on and the build is unstable.
