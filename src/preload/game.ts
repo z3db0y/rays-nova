@@ -4,17 +4,18 @@ import { readFileSync } from 'fs';
 import '../types/window';
 import { join } from 'path';
 import { branch, commit } from '../../buildinfo.json';
+import { ipcRenderer } from 'electron/renderer';
 
 export default class GamePreload extends Preload {
     context = Context.Game;
 
     onLoadStart() {
         window.OffCliV = true;
-
-        if (process.platform == 'win32') loadMouseDriver();
     }
 
     onLoadEnd() {
+        loadMouseDriver();
+
         window.clientExit.style.display = 'flex';
         window.closeClient = () => window.close();
 
@@ -45,24 +46,68 @@ function injectWatermark() {
 
 function loadMouseDriver() {
     try {
-        const driver = require(join(
-            __dirname,
-            '../../mouseDriver/build/Release/addon.node'
-        ));
+        if (!(window as any).getEventListeners) throw new Error('getEventListeners not found');
+        console.log('Mouse handler loaded.');
 
-        console.log(
-            'Mouse driver loaded.',
-            (window as any).getEventListeners(document.documentElement)
-        );
+        let lastData: any;
+        let move: any;
+        let down: any;
+        let up: any;
 
-        setInterval(() => {
-            let data = driver.poll();
+        ipcRenderer.on('mouse-data', (_, mouseData) => {
+            if (document.pointerLockElement && document.pointerLockElement.nodeName === 'CANVAS') {
+                if (!move) {
+                    let listeners = (window as any).getEventListeners(document.pointerLockElement);
+                        
+                    if (listeners.pointerrawupdate && listeners.pointerrawupdate.length) {
+                        move = listeners.pointerrawupdate[0].listener;
+                        document.pointerLockElement.removeEventListener('pointerrawupdate', move);
+                    } else if (listeners.mousemove && listeners.mousemove.length) {
+                        move = listeners.mousemove[0].listener;
+                        document.pointerLockElement.removeEventListener('mousemove', move);
+                    }
 
-            if (document.pointerLockElement) {
+                    // if (listeners.mousedown && listeners.mousedown.length) {
+                    //     down = listeners.mousedown[0].listener;
+                    //     document.pointerLockElement.removeEventListener('mousedown', down);
+                    // }
+
+                    // if (listeners.mouseup && listeners.mouseup.length) {
+                    //     up = listeners.mouseup[0].listener;
+                    //     document.pointerLockElement.removeEventListener('mouseup', up);
+                    // }
+                } else {
+                    processMouseData(mouseData, lastData, {
+                        move,
+                        down,
+                        up,
+                    });
+                }
             }
-        }, 1000 / 360); // 360Hz
+
+            lastData = mouseData;
+        });
     } catch (err) {
-        console.error('Failed to load mouse driver!');
+        console.error('Failed to load mouse handler! (you can ignore this error if you are not on Windows)');
         console.error(err);
     }
+}
+
+function processMouseData(data: any, last: any, handles: { move: any, down: any, up: any }) {
+    if (!last) return;
+
+    // temp: disable clipping
+    let mx = Math.abs(data.x - (data.wx + data.ww / 2)) < 0 ? 0 : data.x - last.x;
+    let my = Math.abs(data.y - (data.wy + data.wh / 2)) < 0 ? 0 : data.y - last.y;
+
+    handles.move({
+        isTrusted: true,
+        movementX: mx,
+        movementY: my,
+        getCoalescedEvents: () => ([{
+            isTrusted: true,
+            movementX: mx,
+            movementY: my,
+        }])
+    });
 }

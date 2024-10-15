@@ -74,6 +74,39 @@ async function handleKeyEvent(
     }
 }
 
+async function injectGEL(contents: Electron.WebContents) {
+    contents.debugger.attach();
+    await contents.debugger.sendCommand('Debugger.enable');
+    await contents.debugger
+        .sendCommand('Runtime.evaluate', {
+            expression: 'window.getEventListeners = getEventListeners',
+            includeCommandLineAPI: true,
+            silent: true,
+        });
+
+    await contents.debugger.sendCommand('Debugger.disable');
+    contents.debugger.detach();
+}
+
+function mouseDriver(window: Electron.BrowserWindow) {
+    try {
+        const driver = require('../mouseDriver/build/Release/addon.node');
+        let interval = setInterval(() => {
+            if (window.isDestroyed()) return clearInterval(interval);
+            
+            const { x: wx, y: wy, width: ww, height: wh } = window.getContentBounds();
+            window.webContents.send('mouse-data', { ...driver.poll(), wx, wy, ww, wh });
+        }, 1000 / 360);
+    } catch {
+        return
+    }
+
+    window.webContents.on('did-navigate', () => {
+        // (win-only) Enable debugger API for mouse driver, thx sorte
+        injectGEL(window.webContents);
+    });    
+}
+
 export default function createMainWindow(key: string) {
     if (key !== launchKey) process.exit(1337);
     let { workAreaSize: displaySize } = screen.getPrimaryDisplay();
@@ -104,6 +137,8 @@ export default function createMainWindow(key: string) {
             contextIsolation: false,
         },
     });
+
+    if (process.platform == 'win32') mouseDriver(window);
 
     let moduleManager = new ModuleManger(Context.Common);
     moduleManager.load(RunAt.LoadStart);
