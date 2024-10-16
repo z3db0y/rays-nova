@@ -50,6 +50,7 @@ function loadMouseDriver() {
         console.log('Mouse handler loaded.');
 
         let lastData: any;
+
         let move: any;
         let down: any;
         let up: any;
@@ -67,15 +68,17 @@ function loadMouseDriver() {
                         document.pointerLockElement.removeEventListener('mousemove', move);
                     }
 
-                    // if (listeners.mousedown && listeners.mousedown.length) {
-                    //     down = listeners.mousedown[0].listener;
-                    //     document.pointerLockElement.removeEventListener('mousedown', down);
-                    // }
+                    if (listeners.mousedown && listeners.mousedown.length) {
+                        down = listeners.mousedown[0].listener;
+                        document.pointerLockElement.removeEventListener('mousedown', down);
+                    }
 
-                    // if (listeners.mouseup && listeners.mouseup.length) {
-                    //     up = listeners.mouseup[0].listener;
-                    //     document.pointerLockElement.removeEventListener('mouseup', up);
-                    // }
+                    if (listeners.mouseup && listeners.mouseup.length) {
+                        up = listeners.mouseup[0].listener;
+                        document.pointerLockElement.removeEventListener('mouseup', up);
+                    }
+
+                    document.pointerLockElement.addEventListener('click', (event) => (event.target as HTMLElement).requestPointerLock());
                 } else {
                     processMouseData(mouseData, lastData, {
                         move,
@@ -96,9 +99,11 @@ function loadMouseDriver() {
 function processMouseData(data: any, last: any, handles: { move: any, down: any, up: any }) {
     if (!last) return;
 
-    // temp: disable clipping
-    let mx = Math.abs(data.x - (data.wx + data.ww / 2)) < 0 ? 0 : data.x - last.x;
-    let my = Math.abs(data.y - (data.wy + data.wh / 2)) < 0 ? 0 : data.y - last.y;
+    let cx = data.wx + data.ww / 2;
+    let cy = data.wy + data.wh / 2;
+
+    let mx = Math.abs(data.x - cx) < 5 ? 0 : data.x - last.x;
+    let my = Math.abs(data.y - cy) < 5 ? 0 : data.y - last.y;
 
     handles.move({
         isTrusted: true,

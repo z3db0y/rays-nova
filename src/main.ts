@@ -104,7 +104,7 @@ function mouseDriver(window: Electron.BrowserWindow) {
     window.webContents.on('did-navigate', () => {
         // (win-only) Enable debugger API for mouse driver, thx sorte
         injectGEL(window.webContents);
-    });    
+    });
 }
 
 export default function createMainWindow(key: string) {
