@@ -51,7 +51,7 @@ export default class Chat extends Module {
 
         for (let i = 0; i < this.categories.length; i++) {
             let category = this.categories[i];
-            let enabled = this.config.get('chat.' + category.key, true);
+            let enabled = this.config.get(category.key, true);
 
             let btn = document.createElement('button');
             btn.id = category.key;

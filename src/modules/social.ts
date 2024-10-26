@@ -130,7 +130,7 @@ export default class Social {
                 elem.style.display = 'none';
                 elem.insertAdjacentHTML(
                     'afterend',
-                    `<img class="raysClan" src=${(clan.cosmetic || '').replace(
+                    `<img class="raysClan" src="${(clan.cosmetic || '').replace(
                         /"/g,
                         '\\"'
                     )}" />`

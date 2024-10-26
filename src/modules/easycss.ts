@@ -3,7 +3,7 @@ import Module from '../module';
 import { waitFor } from '../util';
 import Button from '../options/button';
 import AddCSSUI from '../ui/addcss';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, FSWatcher, readFileSync, watch } from 'fs';
 import TextInput from '../options/textinput';
 
 export default class EasyCSS extends Module {
@@ -12,6 +12,9 @@ export default class EasyCSS extends Module {
     options = [];
     element = document.createElement('style');
     ruleElement = document.createElement('style');
+
+    watcher: FSWatcher | null;
+    lastChange = 0;
 
     contexts = [{
         context: Context.Game,
@@ -133,10 +136,29 @@ export default class EasyCSS extends Module {
         let css = this.config.get('list.' + activeCSS, null);
         this.element.innerHTML = '';
 
+        if (this.watcher) {
+            this.watcher.close();
+            this.watcher = null;
+        }
+
         if(!css || !css.name || !css.path || !existsSync(css.path)) return;
     
-        this.element.onload = this.applyVariables.bind(this);
-        this.element.textContent = readFileSync(css.path).toString();
+        this.element.onload = () => {
+            this.applyVariables.bind(this);
+            this.lastChange = Date.now();
+
+            this.watcher = watch(css.path, (event) => {
+                if (event === 'change' && Date.now() - this.lastChange > 500) {
+                    this.applyCSS();
+                    this.injectTab();
+                }
+
+                this.lastChange = Date.now();
+            });
+        
+        };
+        
+        this.element.textContent = readFileSync(css.path, 'utf8');
     }
 
     applyVariables() {
@@ -156,6 +178,9 @@ export default class EasyCSS extends Module {
     }
 
     parseVariables(sheet: CSSStyleSheet, variableHolder: HTMLElement) {
+        // getter can throw an Exception at times
+        try { sheet?.cssRules; } catch { return; }
+
         if(sheet?.cssRules?.length) for(let rule of sheet.cssRules) {
             if(rule instanceof CSSImportRule) {
                 this.parseVariables(rule.styleSheet, variableHolder);
