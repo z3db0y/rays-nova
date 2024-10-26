@@ -38,15 +38,6 @@
             }
         ]
     },
-    "mac": {
-        "artifactName": "${name}-${os}-portable-${version}-${arch}.${ext}",
-        "target": [
-            {
-                "target": "dmg",
-                "arch": "x64"
-            }
-        ]
-    },
     "nsis": {
         "artifactName": "${name}-${os}-setup-${version}-${arch}.${ext}",
         "oneClick": false,
