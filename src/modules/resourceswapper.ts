@@ -43,8 +43,12 @@ export default class ResourceSwapper extends Module {
             if (!details.url) return callback({ cancel: false });
 
             let url = new URL(details.url);
+
             if (
-                url.hostname !== 'krunker.io' ||
+                (
+                    !url.hostname.endsWith('krunker.io') &&
+                    !url.hostname.endsWith('browserfps.com')
+                ) ||
                 !existsSync(join(this.path, url.pathname)) ||
                 !statSync(join(this.path, url.pathname)).isFile()
             )
