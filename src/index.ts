@@ -87,7 +87,7 @@ function updater(setTitle: (title: string) => void) {
 
 async function getKanyeQuote() {
     return new Promise<string>((resolve, reject) => {
-        get('https://kanye.grool.xyz/', (res) => {
+        get('https://api.kanye.rest/', (res) => {
             let data = '';
             res.on('data', (chunk) => (data += chunk));
             res.on('end', () => {
@@ -232,6 +232,16 @@ export async function launch(key: string, launchMode?: number) {
                 'setTitle'
             );
 
+            let onResetCSSEvent: (event: Electron.IpcMainEvent) => void;
+
+            ipcMain.on(
+                'resetCSS',
+                (onResetCSSEvent = (event) => {
+                    if (event.sender !== splashWindow.webContents) return;
+                    config.set('modules.easycss.active', -1);
+                })
+            );
+
             if (shouldUpdate) {
                 setTitle('Checking for updates...');
                 await updater(setTitle);
@@ -239,6 +249,8 @@ export async function launch(key: string, launchMode?: number) {
 
             setTitle('Client up to date!');
             setTimeout(() => {
+                ipcMain.off('resetCSS', onResetCSSEvent);
+                
                 app.on('window-all-closed', (event) => event.preventDefault());
                 splashWindow.close();
                 app.removeAllListeners('window-all-closed');

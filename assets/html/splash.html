@@ -7,6 +7,7 @@
     <h1 class="title">[Rays] Nova</h1>
     <span id="status"></span>
     <span id="quote"></span>
+    <button id="resetCSS">Reset CSS</button>
 </body>
 <style>
     @font-face {
@@ -58,6 +59,31 @@
         opacity: 0.5;
         text-align: right;
         max-width: 30%;
+    }
+
+    #resetCSS {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        color: #fff;
+        background: #fff1;
+        font-size: 20px;
+        outline: none;
+        border: none;
+        border-radius: 8px;
+        transition: .5s;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+    }
+
+    #resetCSS:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    #resetCSS:not(:disabled):hover {
+        background: #fff2;
     }
 
     .back {
