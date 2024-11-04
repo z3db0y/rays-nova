@@ -4,6 +4,7 @@ import UI from '../ui';
 import AltManagerUI from '../ui/altmanager';
 import Button from '../options/button';
 import TextInput from '../options/textinput';
+import { waitFor } from '../util';
 
 let encryptionKey =
     'a5de16da0bb09720a7a917736c3be0beddc4418816c5f469a31419f1f6d5e592';
@@ -167,7 +168,16 @@ export default class AltManager extends Module {
         (usernameInput as HTMLInputElement).value = alt.username;
         (passwordInput as HTMLInputElement).value = encrypt(alt.password);
 
-        setTimeout(() => window.loginAcc(), 100);
+        setTimeout(async () => {
+            window.loginAcc();
+
+            let captcha = await waitFor(
+                () => document.getElementById('altcha_checkbox'),
+                1000
+            ) as HTMLElement | undefined;
+
+            if (captcha) captcha.click();
+        }, 100);
     }
 
     editAlt(username?: string) {

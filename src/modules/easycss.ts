@@ -144,7 +144,7 @@ export default class EasyCSS extends Module {
         if(!css || !css.name || !css.path || !existsSync(css.path)) return;
     
         this.element.onload = () => {
-            this.applyVariables.bind(this);
+            this.applyVariables();
             this.lastChange = Date.now();
 
             this.watcher = watch(css.path, (event) => {
