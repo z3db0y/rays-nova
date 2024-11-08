@@ -11,7 +11,7 @@ export default class TextInput extends ClientOption {
         description: string,
         needsRefresh?: boolean,
         needsRestart?: boolean,
-        onChange?(value: boolean): void,
+        onChange?(value: any): void,
 
         label: string
         type?: string
@@ -30,8 +30,14 @@ export default class TextInput extends ClientOption {
         input.value = this.module.config.get(this.id, this.defaultValue || '') as string;
         input.type = this.type || 'text';
         input.onchange = () => {
-            this.module.config.set(this.id, input.value);
-            if(this.onChange) this.onChange(input.value);
+            let value = (
+                this.type === 'number' ?
+                parseFloat(input.value) :
+                input.value
+            ) || input.value;
+
+            this.module.config.set(this.id, value);
+            if(this.onChange) this.onChange(value);
         };
 
         container.append(input);

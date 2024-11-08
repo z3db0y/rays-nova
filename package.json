@@ -1,6 +1,6 @@
 {
     "name": "rays_nova",
-    "version": "3.0.0-alpha.9",
+    "version": "3.0.0-alpha.10",
     "main": "js/launch.js",
     "devDependencies": {
         "@types/node": "^20.10.7",

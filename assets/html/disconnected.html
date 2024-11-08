@@ -11,7 +11,10 @@
             >You are offline. Please check your internet connection and try
             again.</span
         >
-        <button onclick="location.href = '/\/krunker.io'">Back to game</button>
+        <div class="buttons">
+            <button onclick="disableProxy(event)">Disable proxy</button>
+            <button onclick="location.href = 'https:/\/krunker.io'">Back to game</button>
+        </div>
     </div>
 
     <script>
@@ -53,6 +56,11 @@
         height: 100%;
     }
 
+    .buttons {
+        margin-top: 10px;
+        display: flex;
+    }
+
     button {
         margin: 10px;
         border-radius: 8px;
@@ -65,7 +73,12 @@
         font-size: 16px;
     }
 
-    button:hover {
+    button:disabled {
+        opacity: .5;
+        cursor: not-allowed;
+    }
+
+    button:not(:disabled):hover {
         background: #ddddff15;
     }
 </style>

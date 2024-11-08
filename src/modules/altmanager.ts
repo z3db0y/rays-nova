@@ -6,9 +6,8 @@ import Button from '../options/button';
 import TextInput from '../options/textinput';
 import { waitFor } from '../util';
 
-let encryptionKey =
-    'a5de16da0bb09720a7a917736c3be0beddc4418816c5f469a31419f1f6d5e592';
-let encrypt = (data: string) => {
+let encryptionKey = 'a5de16da0bb09720a7a917736c3be0beddc4418816c5f469a31419f1f6d5e592';
+export let encrypt = (data: string) => {
     let out = '';
     for (let i = 0; i < data.length; i++) {
         out += String.fromCharCode(
