@@ -203,6 +203,9 @@ export default class AltManager extends Module {
         let alt = alts.find((a) => a.username === username);
         if (!alt) return;
 
+        const { pointerLockElement } = document;
+        document.exitPointerLock();
+
         for (let i = 0; i < 2; i++) {
             window.showWindow(5);
         }
