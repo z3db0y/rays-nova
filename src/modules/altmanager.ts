@@ -246,7 +246,7 @@ export default class AltManager extends Module {
 
         this.config.set('editui.username', alt.username);
         this.config.set('editui.password', encrypt(alt.password));
-        this.config.set('editui.keybind', alt.keybind);
+        if (alt.keybind) this.config.set('editui.keybind', alt.keybind);
         this.addAltUI.open();
     }
 }
