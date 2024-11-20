@@ -13,6 +13,11 @@
 </div>
 
 <style>
+    .keystrokes {
+        --key-offset-y: 0.12;
+        --key-offset-x: 0.005;
+    }
+
     .wasd, .mouse {
         display: grid;
         gap: 5px;
@@ -69,5 +74,12 @@
         height: 2px;
         transform: translate(-50%, -50%);
         background: var(--key-color, #FFF);
+    }
+
+    .keystrokes {
+        position: fixed;
+        z-index: 999;
+        top: calc((100% - 200px * var(--key-scale, 1)) * var(--key-offset-y, 0));
+        left: calc((100% - 150px * var(--key-scale, 1)) * var(--key-offset-x, 0));
     }
 </style>

@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { Context, RunAt } from '../context';
 import Module from '../module';
 import { join } from 'path';
+import { waitFor } from '../util';
 
 export default class Keystrokes extends Module {
     name = 'Keystrokes';
@@ -35,12 +36,8 @@ export default class Keystrokes extends Module {
 
         this.container = document.createElement('div');
         this.container.innerHTML = rawHTML;
-        this.container.style.cssText = `
-            position: fixed;
-            z-index: 999;
-        `;
 
-        document.body.appendChild(this.container);
+        document.getElementById('inGameUI').appendChild(this.container);
 
         let keyNames = ['w', 'a', 's', 'd', 'lmb', 'rmb', 'space'];
 
@@ -68,6 +65,35 @@ export default class Keystrokes extends Module {
 
             let key = this.keys[keyName];
             if (key) key.classList.remove('active');
+        });
+
+        let fadeBg = document.getElementById('instructionsFadeBG');
+
+        waitFor(() => fadeBg.style.opacity == '0').then(() => {
+            let canvases = document.body.getElementsByTagName('canvas');
+
+            for (let i = canvases.length-1; i >= 0; i--) {
+                let canvas = canvases[i];
+
+                if (!canvas.id && !canvas.className) {
+                    
+                    canvas.addEventListener('mousedown', event => {
+                        if (event.button > 2 || event.button == 1) return;
+
+                        let key = this.keys[event.button ? 'rmb' : 'lmb'];
+                        if (key) key.classList.add('active');
+                    });
+
+                    canvas.addEventListener('mouseup', event => {
+                        if (event.button > 2 || event.button == 1) return;
+
+                        let key = this.keys[event.button ? 'rmb' : 'lmb'];
+                        if (key) key.classList.remove('active');
+                    });
+
+                    break;
+                }
+            }
         });
     }
 }
