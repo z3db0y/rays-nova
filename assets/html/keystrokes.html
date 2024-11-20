@@ -1,0 +1,73 @@
+<div class="keystrokes">
+    <div class="wasd">
+        <div id="raysnova_keyW">W</div>
+        <div id="raysnova_keyA">A</div>
+        <div id="raysnova_keyS">S</div>
+        <div id="raysnova_keyD">D</div>
+    </div>
+    <div class="mouse">
+        <div id="raysnova_keyLMB">LMB</div>
+        <div id="raysnova_keyRMB">RMB</div>
+    </div>
+    <div class="space" id="raysnova_keySPACE"></div>
+</div>
+
+<style>
+    .wasd, .mouse {
+        display: grid;
+        gap: 5px;
+        margin-bottom: 5px;
+    }
+
+    .wasd, .mouse, .space {
+        width: 150px;
+    }
+
+    .wasd {
+        height: 100px;
+    }
+
+    .mouse {
+        height: 50px;
+    }
+
+    .wasd :first-child, .mouse :last-child {
+        grid-column: 2;
+    }
+
+    .wasd :not(:first-child) {
+        grid-row: 2;
+    }
+
+    .wasd *, .mouse *, .space {
+        user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+        background: var(--key-background, #0007);
+        color: var(--key-color, #FFF);
+        font-family: 'FFF Forward';
+    }
+
+    .wasd .active, .mouse .active, .space.active {
+        background: var(--key-active-background, crimson);
+    }
+
+    .space {
+        position: relative;
+        height: 40px;
+    }
+
+    .space::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 60px;
+        height: 2px;
+        transform: translate(-50%, -50%);
+        background: var(--key-color, #FFF);
+    }
+</style>
