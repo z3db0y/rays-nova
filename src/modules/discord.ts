@@ -18,7 +18,6 @@ export default class Discord extends Module {
     clientId = '1210061966605815838';
     client: Client | null = null;
     updateInterval = 2000;
-    social = new Social();
 
     buttonUI = new RPCButtonsUI(this);
 
@@ -191,12 +190,15 @@ export default class Discord extends Module {
                 break;
         }
 
-        if (activity.id && activity.user && this.client.user?.id)
-            this.social.sync(
+        if (activity.id && activity.user && this.client.user?.id) {
+            let social = this.manager.loaded.find(m => m instanceof Social);
+
+            social?.sync(
                 this.client.user.id,
                 activity.loggedIn ? activity.user : null,
                 activity.id
             );
+        }
     }
 
     main() {
@@ -221,8 +223,6 @@ export default class Discord extends Module {
         });
 
         ipcMain.on('updateRPC', this.update.bind(this));
-
-        this.social.main();
     }
 
     renderer(): void {
@@ -251,7 +251,5 @@ export default class Discord extends Module {
 
             ipcRenderer.send('updateRPC', gameActivity);
         }, this.updateInterval);
-
-        this.social.renderer();
     }
 }

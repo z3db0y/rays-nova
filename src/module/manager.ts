@@ -11,6 +11,7 @@ type OnBeforeRequestFunction = (
 ) => any;
 
 export default class Manager {
+    loaded: Module[] = [];
     private static beforeRequestCallbacks: OnBeforeRequestFunction[] = [];
 
     private directory = join(__dirname, '../modules/');
@@ -51,6 +52,8 @@ export default class Manager {
             )
                 continue;
 
+            module.manager = this;
+
             try {
                 module.init?.(this.context);
             } catch (initError) {
@@ -58,6 +61,7 @@ export default class Manager {
                     `Error while initializing module ${module.name}:`,
                     initError
                 );
+                return;
             }
 
             try {
@@ -74,7 +78,10 @@ export default class Manager {
                     `Error while running module ${module.name}:`,
                     moduleError
                 );
+                return;
             }
+
+            this.loaded.push(module);
         }
     }
 

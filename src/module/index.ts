@@ -1,8 +1,11 @@
 import ClientOption from '../options';
 import { Context, RunAt } from '../context';
 import config from '../config';
+import Manager from './manager';
 
 export default abstract class Module {
+    manager: Manager;
+    
     config = {
         get: (key: string, def: any) => config.get(`modules.${this.id}.${key}`, def),
         set: (key: string, value: any) => config.set(`modules.${this.id}.${key}`, value),

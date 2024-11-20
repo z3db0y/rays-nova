@@ -1,8 +1,35 @@
 import { ipcMain, ipcRenderer } from 'electron';
+import Module from '../module';
 import { WebSocket } from 'ws';
+import { Context, RunAt } from '../context';
+import Checkbox from '../options/checkbox';
+import { waitFor } from '../util';
 
-// Not a module itself, intertwined with discord module.
-export default class Social {
+export default class Social extends Module {
+    name = 'Social';
+    id = 'social';
+    readonly endpoint = new URL('wss://api.z3db0y.com/nova/ws');
+
+    options = [
+        new Checkbox(this, {
+            name: 'Enabled',
+            description: 'Sync custom badges & clan tags from ' + this.endpoint.hostname,
+            id: 'enabled',
+            defaultValue: true,
+        })
+    ];
+
+    contexts = [
+        {
+            context: Context.Common,
+            runAt: RunAt.LoadStart,
+        },
+        {
+            context: Context.Game,
+            runAt: RunAt.LoadEnd,
+        },
+    ];
+
     socket: WebSocket;
     messageQueue: any[] = [];
     users: any[] = [];
@@ -89,7 +116,7 @@ export default class Social {
     injectBadges(elem: Element, badges: string[], endTable = false) {
         for (let i = 0; i < badges.length; i++)
             elem.insertAdjacentHTML(
-                endTable ? 'afterbegin' : 'afterbegin',
+                endTable ? 'beforeend' : 'afterbegin',
                 `<img class="raysBadge" src="${(
                     this.badges.find((b) => b.name === badges[i])?.image || ''
                 ).replace(/"/g, '\\"')}" />`
@@ -162,10 +189,22 @@ export default class Social {
             { attributes: true, attributeFilter: ['style'] }
         );
 
-        // new MutationObserver(() => this.patchEndTable()).observe(
-        //     this.endMidHolder,
-        //     { attributes: true, attributeFilter: ['style'] }
-        // );
+        waitFor(() => (window as any).GUI?.endScreen).then((endScreen: any) => {
+            let orig: any;
+            
+            Object.defineProperty(endScreen.tabs.leaderboard, 'showTable', {
+                set: v => {
+                    orig = v;
+                },
+                get: () => {
+                    return (...args: any) => {
+                        let _r = orig.apply(endScreen.tabs.leaderboard, args);
+                        this.patchEndTable();
+                        return _r;
+                    }
+                }
+            });
+        });
 
         ipcRenderer.on('social-sync', (_, users, badges, clans) => {
             this.users = users;
@@ -188,7 +227,25 @@ export default class Social {
     }
 
     connect() {
-        this.socket = new WebSocket('wss://api.z3db0y.com/nova/ws');
+        if (!this.config.get('enabled', true)) {
+            if (
+                this.socket.readyState !== WebSocket.CLOSED &&
+                this.socket.readyState !== WebSocket.CLOSING
+            ) {
+                this.socket.close();
+            }
+
+            this.socket = null;
+            return;
+        }
+
+        if (
+            this.socket &&
+            (this.socket.readyState === WebSocket.OPEN ||
+            this.socket.readyState == WebSocket.CONNECTING)
+        ) return;
+
+        this.socket = new WebSocket(this.endpoint);
 
         this.socket.on('message', (data) => {
             try {
