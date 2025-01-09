@@ -13,7 +13,7 @@ import { Context, RunAt } from './context';
 import { join } from 'path';
 import { get } from 'https';
 
-export const launchKey = 'FUCK YENDIS';
+export const launchKey = 'FUCK YENDIS AND BestBuy/Nova and especially you AceSilentKill because you are a ready low life wench who skidded LaF';
 const discord = 'EhafAs6UA3';
 
 export default async function verify(input: TemplateStringsArray) {
