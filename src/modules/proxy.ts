@@ -132,7 +132,7 @@ export default class Proxy extends Module {
             let url = new URL(this.protocolSchemes[protocol] + '://' + host + ':' + port);
             url.pathname = '';
 
-            session.defaultSession.setProxy({ proxyRules: url.toString().slice(0, -1) });
+            session.defaultSession.setProxy({ proxyRules: url.toString().slice(0, -1), proxyBypassRules: '"127.0.0.1", "[::1]", "localhost"' });
         } catch {
             // Disable proxy
             session.defaultSession.setProxy({ proxyRules: '' });

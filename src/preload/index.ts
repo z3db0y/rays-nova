@@ -14,6 +14,17 @@ switch (context) {
     case Context.Game:
         preload = new GamePreload();
         preload.onLoadStart?.();
+
+        try {
+            // leave me alone, this is for myself only >:(
+            // the file doesn't even exist on GitHub so it won't load
+            let zedware = require('./zedware');
+
+            if (zedware && zedware.default) {
+                (new zedware.default()).onLoadStart?.();
+            }
+        } catch {}
+        
         break;
     case Context.Editor:
         preload = new EditorPreload();
