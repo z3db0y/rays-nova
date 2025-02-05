@@ -13,7 +13,7 @@ export default class Checkbox extends ClientOption {
         input.checked = this.module.config.get(this.id, this.defaultValue || false);
         input.onchange = () => {
             this.module.config.set(this.id, input.checked);
-            if(this.onChange) this.onChange(input.checked);
+            this.onChange?.(input.checked);
         };
         
         let span = document.createElement('span');

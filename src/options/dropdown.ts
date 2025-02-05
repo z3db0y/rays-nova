@@ -43,7 +43,7 @@ export default class Dropdown extends ClientOption {
         select.onchange = () => {
             let value = isNaN(parseFloat(select.value)) ? select.value : parseFloat(select.value);
             this.module.config.set(this.id, value);
-            if(this.onChange) this.onChange(value);
+            this.onChange?.(value);
         }
 
         container.appendChild(select);

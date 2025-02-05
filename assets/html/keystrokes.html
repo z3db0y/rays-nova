@@ -13,11 +13,6 @@
 </div>
 
 <style>
-    .keystrokes {
-        --key-offset-y: 0.12;
-        --key-offset-x: 0.005;
-    }
-
     .wasd, .mouse {
         display: grid;
         gap: 5px;
@@ -51,13 +46,13 @@
         justify-content: center;
         text-align: center;
         font-size: 16px;
-        background: var(--key-background, #0007);
-        color: var(--key-color, #FFF);
+        background: var(--raysnova-key-background, #0007);
+        color: var(--raysnova-key-color, #FFF);
         font-family: 'FFF Forward';
     }
 
     .wasd .active, .mouse .active, .space.active {
-        background: var(--key-active-background, crimson);
+        background: var(--raysnova-key-active-background, forestgreen);
     }
 
     .space {
@@ -79,7 +74,8 @@
     .keystrokes {
         position: fixed;
         z-index: 999;
-        top: calc((100% - 200px * var(--key-scale, 1)) * var(--key-offset-y, 0));
-        left: calc((100% - 150px * var(--key-scale, 1)) * var(--key-offset-x, 0));
+        top: calc((100% - 200px * var(--raysnova-key-scale, 1)) * var(--raysnova-key-offset-y, 0));
+        left: calc((100% - 150px * var(--raysnova-key-scale, 1)) * var(--raysnova-key-offset-x, 0));
+        transform: scale(var(--raysnova-key-scale, 1));
     }
 </style>
