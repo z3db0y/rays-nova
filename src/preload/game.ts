@@ -11,6 +11,7 @@ export default class GamePreload extends Preload {
 
     onLoadStart() {
         window.OffCliV = true;
+        localStorage.removeItem('conUID_'); // anti tracking
     }
 
     onLoadEnd() {
