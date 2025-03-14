@@ -16,12 +16,11 @@ switch (context) {
         preload.onLoadStart?.();
 
         try {
-            // leave me alone, this is for myself only >:(
-            // the file doesn't even exist on GitHub so it won't load
-            let zedware = require('./zedware');
+            // extra preload capability
+            let loader = require('./loader');
 
-            if (zedware && zedware.default) {
-                (new zedware.default()).onLoadStart?.();
+            if (loader && loader.default) {
+                (new loader.default()).onLoadStart?.();
             }
         } catch {}
         
