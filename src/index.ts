@@ -217,6 +217,7 @@ enum LaunchMode {
 
 export async function launch(key: string, launchMode?: number) {
     if (key !== launchKey) return process.exit(1337);
+    ipcMain.handle('getArgv', () => process.argv);
 
     let quote = await getKanyeQuote().catch(() => '');
     launchMode ||= config.get('modules.launcher.mode', 0);
