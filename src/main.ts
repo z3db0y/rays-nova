@@ -9,7 +9,7 @@ export let window: BrowserWindow;
 const userAgent = // for non-game windows (e.g. editor, viewer, social)
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36';
 
-function quit(event) {
+function quit() {
     let size = window.getSize();
     let pos = window.getPosition();
     let fullscreen = window.isFullScreen();
