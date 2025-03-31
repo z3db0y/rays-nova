@@ -44,9 +44,12 @@ export default class Checkbox extends ClientOption {
         };
 
         let button = document.createElement('div');
-        button.className = 'accBtn button';
+        button.className = 'button';
         button.textContent = this.label;
-        button.style.width = 'calc(100% - 30px)';
+        button.style.width = 'calc(100% - 10px)';
+        button.style.fontSize = '20px';
+        button.style.padding = '10px 0';
+
         if(this.color) button.classList.add(colors[this.color]);
         if(this.onChange) button.onclick = this.onChange.bind(this);
 

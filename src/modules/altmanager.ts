@@ -55,9 +55,7 @@ class AddAltUI extends UI {
             id: '',
             description: '',
             onChange: () => {
-                let username = this.module.config
-                    .get('editui.username', '')
-                    .toLowerCase();
+                let username = this.module.config.get('editui.username', '').toLowerCase();
                 let password = this.module.config.get('editui.password', '');
                 let keybind = this.module.config.get('editui.keybind', []);
 
@@ -74,6 +72,7 @@ class AddAltUI extends UI {
                 } catch {}
 
                 let altIndex = alts.findIndex((a) => a.username === username);
+
                 if (altIndex !== -1) {
                     alts[altIndex].password = encrypt(password);
                     alts[altIndex].keybind = keybind;
@@ -85,13 +84,12 @@ class AddAltUI extends UI {
                     });
                 }
 
-                window.localStorage.setItem(
-                    'taxAltManager',
-                    JSON.stringify(alts)
-                );
+                window.localStorage.setItem('taxAltManager', JSON.stringify(alts));
+
                 this.module.config.delete('editui.username');
                 this.module.config.delete('editui.password');
                 this.module.config.delete('editui.keybind');
+
                 (this.module as AltManager).ui.open();
             },
         }),
@@ -106,6 +104,7 @@ class AddAltUI extends UI {
                 this.module.config.delete('editui.username');
                 this.module.config.delete('editui.password');
                 this.module.config.delete('editui.keybind');
+                
                 (this.module as AltManager).ui.open();
             },
         }),
@@ -203,25 +202,32 @@ export default class AltManager extends Module {
         let alt = alts.find((a) => a.username === username);
         if (!alt) return;
 
-        const { pointerLockElement } = document;
         document.exitPointerLock();
 
-        for (let i = 0; i < 2; i++) {
-            window.showWindow(5);
-        }
+        window.showWindow(0);
+        window.loginOrRegister();
 
-        let windowHolder = document.getElementById('windowHolder');
-        let usernameInput = document.getElementById('accName');
-        let passwordInput = document.getElementById('accPass');
+        let loginPopup = document.getElementById('login_popup');
+        
+        if(!loginPopup) return;
 
-        if (!windowHolder || !usernameInput || !passwordInput) return;
-        windowHolder.style.display = '';
+        let [usernameInput, passwordInput] = loginPopup.querySelectorAll('input');
+        if (!usernameInput || !passwordInput) return;
+
+        let [_, toggleBtn, __, loginBtn] = document.getElementById('login_popup').querySelectorAll('button');
+        if (!toggleBtn || !loginBtn) return;
+
+        if (toggleBtn.textContent.includes('username')) toggleBtn.click();
 
         (usernameInput as HTMLInputElement).value = alt.username;
         (passwordInput as HTMLInputElement).value = encrypt(alt.password);
 
+        // Svelte :P
+        usernameInput.dispatchEvent(new Event('input'));
+        passwordInput.dispatchEvent(new Event('input'));
+
         setTimeout(async () => {
-            window.loginAcc();
+            loginBtn.click();
 
             let captcha = await waitFor(
                 () => document.getElementById('altcha_checkbox'),
