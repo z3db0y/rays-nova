@@ -147,7 +147,12 @@ export default class AltManager extends Module {
 
         for (let style in firstStyle)
             this.button.style[style] = firstStyle[style];
-        document.getElementById('signedOutHeaderBar').append(this.button);
+
+        waitFor(() => document.getElementById('signedOutHeaderBar')).then((bar: HTMLDivElement) => {
+            (bar.lastElementChild as HTMLElement).style.display = 'none'; // Signup rewards
+            bar.append(this.button);
+        });
+
         this.button.onclick = () => this.ui.open();
 
         document.addEventListener('keydown', this.keyListener.bind(this));
@@ -203,39 +208,39 @@ export default class AltManager extends Module {
         if (!alt) return;
 
         document.exitPointerLock();
+        window.showWindow(5);
 
-        window.showWindow(0);
-        window.loginOrRegister();
+        setTimeout(async () => { // Allow Svelte component to mount
+            let usernameInput = document.getElementById('accName');
+            let passwordInput = document.getElementById('accPass');
+            
+            if (!usernameInput || !passwordInput) return;
 
-        let loginPopup = document.getElementById('login_popup');
-        
-        if(!loginPopup) return;
+            let toggleBtn = usernameInput.previousElementSibling?.lastElementChild as HTMLButtonElement;
+            let loginBtn = passwordInput.nextElementSibling as HTMLButtonElement;
 
-        let [usernameInput, passwordInput] = loginPopup.querySelectorAll('input');
-        if (!usernameInput || !passwordInput) return;
+            if (!toggleBtn || !loginBtn) return;
 
-        let [_, toggleBtn, __, loginBtn] = document.getElementById('login_popup').querySelectorAll('button');
-        if (!toggleBtn || !loginBtn) return;
+            if (toggleBtn.textContent.includes('username')) toggleBtn.click();
 
-        if (toggleBtn.textContent.includes('username')) toggleBtn.click();
+            (usernameInput as HTMLInputElement).value = alt.username;
+            (passwordInput as HTMLInputElement).value = encrypt(alt.password);
 
-        (usernameInput as HTMLInputElement).value = alt.username;
-        (passwordInput as HTMLInputElement).value = encrypt(alt.password);
+            // Svelte :P
+            usernameInput.dispatchEvent(new Event('input'));
+            passwordInput.dispatchEvent(new Event('input'));
 
-        // Svelte :P
-        usernameInput.dispatchEvent(new Event('input'));
-        passwordInput.dispatchEvent(new Event('input'));
+            setTimeout(async () => { // Allow input events to fire
+                loginBtn.click();
 
-        setTimeout(async () => {
-            loginBtn.click();
+                let captcha = await waitFor(
+                    () => document.getElementById('altcha_checkbox'),
+                    1000
+                ) as HTMLElement | undefined;
 
-            let captcha = await waitFor(
-                () => document.getElementById('altcha_checkbox'),
-                1000
-            ) as HTMLElement | undefined;
-
-            if (captcha) captcha.click();
-        }, 100);
+                if (captcha) captcha.click();
+            });
+        });
     }
 
     editAlt(username?: string) {
