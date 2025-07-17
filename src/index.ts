@@ -102,7 +102,7 @@ async function getKanyeQuote() {
 }
 
 function splash() {
-    let { workAreaSize: primaryDisplay } = screen.getPrimaryDisplay();
+    let { workArea: primaryDisplay } = screen.getPrimaryDisplay();
     let biggest = Math.max(primaryDisplay.width, primaryDisplay.height) * 0.25;
     let size = {
         width: ~~biggest,
@@ -111,6 +111,8 @@ function splash() {
 
     let win = new BrowserWindow({
         ...size,
+        x: primaryDisplay.x + primaryDisplay.width / 2 - size.width / 2,
+        y: primaryDisplay.y + primaryDisplay.height / 2 - size.height / 2,
         frame: false,
         resizable: false,
         show: false,
