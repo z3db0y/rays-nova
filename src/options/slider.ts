@@ -56,8 +56,9 @@ export default class Slider extends ClientOption {
         let currentValue = this.module.config.get(this.id, this.defaultValue ?? ((this.max + this.min) / 2));
         input.value = slideInput.value = currentValue;
 
-        slideInput.oninput = input.oninput = () => {
-            let parsed = parseFloat(input.value);
+        slideInput.oninput = input.oninput = ({ target }) => {
+            let parsed = parseFloat((target as HTMLInputElement).value);
+
             if (isNaN(parsed) || parsed < this.min || parsed > this.max) return;
 
             input.value = parsed + '';

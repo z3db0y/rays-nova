@@ -8,7 +8,7 @@ import { waitFor } from '../util';
 export default class Social extends Module {
     name = 'Social';
     id = 'social';
-    readonly endpoint = new URL('wss://api.z3db0y.com/nova/ws');
+    readonly endpoint = new URL('wss://api.zedboy.dev/nova/ws');
 
     options = [
         new Checkbox(this, {

@@ -1,6 +1,6 @@
 # [Rays] Nova
 
-![Version badge](https://api.z3db0y.com/nova/versionBadge) ![PR Badge](https://img.shields.io/badge/PRs-Much%20Appreciated-orange?style=for-the-badge)
+![Version badge](https://api.zedboy.dev/nova/versionBadge) ![PR Badge](https://img.shields.io/badge/PRs-Much%20Appreciated-orange?style=for-the-badge)
 
 ![Splash screen](https://github.com/z3db0y/rays-nova/blob/main/assets/img/splash.gif?raw=true)
 
