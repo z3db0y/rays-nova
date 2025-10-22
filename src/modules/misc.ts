@@ -6,7 +6,7 @@ import { window } from '../main';
 import TextInput from '../options/textinput';
 import Slider from '../options/slider';
 
-export default class Chat extends Module {
+export default class Misc extends Module {
     name = 'Miscellaneous';
     id = 'misc';
     options = [
@@ -90,7 +90,9 @@ export default class Chat extends Module {
         let multiplier = this.config.get('placeboFps.multiplier', 1);
 
         if (this.placeboFpsObserver) this.placeboFpsObserver.disconnect();
+
         this.placeboFpsObserver = null;
+        this.placeboFpsApplied = false;
 
         if (!enabled) return;
 

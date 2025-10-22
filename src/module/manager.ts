@@ -18,26 +18,31 @@ export default class Manager {
     private context: Context;
     private settingsInjected = false;
 
+    private cached: Module[] = [];
+
     constructor(context: Context) {
         this.context = context;
     }
 
     listAll(dir = this.directory): Module[] {
-        let modules: Module[] = [];
 
         for (let file of readdirSync(dir, { withFileTypes: true })) {
             let path = dir + file.name;
-            if (file.isDirectory()) modules.push(...this.listAll(path + '/'));
+            if (file.isDirectory()) this.cached.push(...this.listAll(path + '/'));
             else {
                 try {
                     let ModuleClass = require(path).default;
+
+                    let index = this.cached.findIndex(x => x instanceof ModuleClass);
+                    if (index >= 0) continue;
+                    
                     let module = new ModuleClass();
-                    if (module instanceof Module) modules.push(module);
+                    if (module instanceof Module) this.cached.push(module);
                 } catch {}
             }
         }
 
-        return modules;
+        return this.cached;
     }
 
     load(runAt: RunAt) {
