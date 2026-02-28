@@ -137,6 +137,7 @@ export default class AltManager extends Module {
     renderer() {
         this.button.className = 'button buttonPI lgn';
         this.button.textContent = 'Alt Manager';
+
         let firstStyle = {
             width: '300px',
             marginRight: '0',
@@ -148,9 +149,19 @@ export default class AltManager extends Module {
         for (let style in firstStyle)
             this.button.style[style] = firstStyle[style];
 
-        waitFor(() => document.getElementById('signedOutHeaderBar')).then((bar: HTMLDivElement) => {
+        let mount = (bar: HTMLDivElement) => {
             (bar.lastElementChild as HTMLElement).style.display = 'none'; // Signup rewards
             bar.append(this.button);
+        };
+
+        waitFor(() => document.getElementById('signedOutHeaderBar')).then((bar: HTMLDivElement) => {
+            mount(bar);
+
+            // Logout observer
+            new MutationObserver(() => {
+                bar = document.getElementById('signedOutHeaderBar') as HTMLDivElement;
+                if (bar) mount(bar);
+            }).observe(document.getElementById('playerHeaderEl'), { childList: true });
         });
 
         this.button.onclick = () => this.ui.open();
@@ -211,17 +222,18 @@ export default class AltManager extends Module {
         window.showWindow(5);
 
         setTimeout(async () => { // Allow Svelte component to mount
+            let toggleBtn = document.querySelector('label[for=accEmail] + button') as HTMLButtonElement;
+
+            if (toggleBtn) await new Promise((resolve) => {
+                toggleBtn.click();
+                setTimeout(resolve);
+            });
+
             let usernameInput = document.getElementById('accName');
             let passwordInput = document.getElementById('accPass');
+            let loginBtn = passwordInput?.nextElementSibling as HTMLButtonElement;
             
-            if (!usernameInput || !passwordInput) return;
-
-            let toggleBtn = usernameInput.previousElementSibling?.lastElementChild as HTMLButtonElement;
-            let loginBtn = passwordInput.nextElementSibling as HTMLButtonElement;
-
-            if (!toggleBtn || !loginBtn) return;
-
-            if (toggleBtn.textContent.includes('username')) toggleBtn.click();
+            if (!usernameInput || !passwordInput || !loginBtn) return;
 
             (usernameInput as HTMLInputElement).value = alt.username;
             (passwordInput as HTMLInputElement).value = encrypt(alt.password);
@@ -230,16 +242,8 @@ export default class AltManager extends Module {
             usernameInput.dispatchEvent(new Event('input'));
             passwordInput.dispatchEvent(new Event('input'));
 
-            setTimeout(async () => { // Allow input events to fire
-                loginBtn.click();
-
-                let captcha = await waitFor(
-                    () => document.getElementById('altcha_checkbox'),
-                    1000
-                ) as HTMLElement | undefined;
-
-                if (captcha) captcha.click();
-            });
+            await new Promise((resolve) => setTimeout(resolve));
+            loginBtn.click();
         });
     }
 

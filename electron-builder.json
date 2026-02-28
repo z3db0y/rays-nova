@@ -2,6 +2,11 @@
     "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
     "appId": "com.z3db0y.nova",
     "icon": "assets/img/icon.png",
+    "files": [
+        "js/**/*",
+        "assets/**/*",
+        "buildinfo.json"
+    ],
     "productName": "[Rays] Nova",
     "win": {
         "artifactName": "${name}-${os}-portable-${version}-${arch}.${ext}",
