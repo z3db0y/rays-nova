@@ -3,9 +3,9 @@
     "version": "3.0.0-alpha.20",
     "main": "js/launch.js",
     "devDependencies": {
-        "@types/node": "^20.10.7",
+        "@types/node": "^16.18.126",
         "@types/ws": "^8.5.10",
-        "electron": "^10.4.7",
+        "electron": "npm:electron-nightly@12.0.0-nightly.20201116",
         "electron-builder": "^25.1.8",
         "typescript": "^5.3.3"
     },
