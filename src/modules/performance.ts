@@ -123,7 +123,9 @@ export default class Performance extends Module {
             app.commandLine.appendSwitch(name, value || '');
         }
 
+        app.commandLine.appendSwitch('enable-features', 'ImplLatencyRecovery,MainLatencyRecovery');
         app.commandLine.appendSwitch('no-sandbox');
+
         if (this.config.get('inProcessGPU', false))
             app.commandLine.appendSwitch('in-process-gpu');
     }

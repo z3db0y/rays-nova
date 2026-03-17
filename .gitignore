@@ -3,3 +3,4 @@ js/
 dist/
 start.vbs
 src/preload/loader.ts
+src/modules/_*.ts
