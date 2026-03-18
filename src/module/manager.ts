@@ -1,6 +1,6 @@
 import Module from './index';
 import { Context, RunAt } from '../context';
-import { readdirSync } from 'fs';
+import { readdirSync, statSync } from 'fs';
 import { join } from 'path';
 import { session } from 'electron';
 import { waitFor } from '../util';
@@ -26,9 +26,11 @@ export default class Manager {
 
     listAll(dir = this.directory): Module[] {
 
-        for (let file of readdirSync(dir, { withFileTypes: true })) {
-            let path = dir + file.name;
-            if (file.isDirectory()) this.cached.push(...this.listAll(path + '/'));
+        for (let file of readdirSync(dir)) {
+            let path = dir + file;
+            let stat = statSync(path);
+
+            if (stat.isDirectory()) this.cached.push(...this.listAll(path + '/'));
             else {
                 try {
                     let ModuleClass = require(path).default;
